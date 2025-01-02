@@ -6,12 +6,12 @@ import dev.extframework.gradle.publish.ExtensionPublication
 
 plugins {
     kotlin("jvm") version "2.0.21"
-    id("dev.extframework.mc") version "1.2.27"
-    id("dev.extframework.common") version "1.0.37"
+    id("dev.extframework.mc") version "1.2.29"
+    id("dev.extframework.common") version "1.0.45"
 }
 
 group = "net.yakclient.extension"
-version = "1.0-BETA"
+version = "1.0.1-BETA"
 
 tasks.wrapper {
     gradleVersion = "8.6-rc-1"
@@ -43,7 +43,7 @@ extension {
         name = "camera-tweaks"
     }
     extensions {
-        require("dev.extframework.extension:mcp-mappings:1.0.1-BETA")
+        require("dev.extframework.extension:mcp-mappings:1.0.2-BETA")
     }
     partitions {
         main {
