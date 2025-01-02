@@ -6,7 +6,7 @@ import dev.extframework.gradle.publish.ExtensionPublication
 
 plugins {
     kotlin("jvm") version "2.0.21"
-    id("dev.extframework.mc") version "1.2.26"
+    id("dev.extframework.mc") version "1.2.27"
     id("dev.extframework.common") version "1.0.37"
 }
 
@@ -18,12 +18,11 @@ tasks.wrapper {
 }
 
 tasks.launch {
-    targetNamespace.set(MinecraftMappings.mcpLegacy.deobfuscatedNamespace)
-    mcVersion.set("1.8.9")
-    jvmArgs(
-        "-Xmx3G",
-        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005",
-    )
+    targetNamespace.set(MinecraftMappings.mojang.deobfuscatedNamespace)
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    })
+    mcVersion.set("1.21.4")
 }
 
 dependencies {
@@ -44,7 +43,7 @@ extension {
         name = "camera-tweaks"
     }
     extensions {
-        require("dev.extframework.extension:mcp-mappings:1.0-BETA")
+        require("dev.extframework.extension:mcp-mappings:1.0.1-BETA")
     }
     partitions {
         main {
@@ -60,6 +59,30 @@ extension {
                 coreApi()
             }
             supportVersions("1.8.9")
+        }
+        version("1.21.x") {
+            mappings = MinecraftMappings.mojang
+            dependencies {
+                minecraft("1.21")
+                coreApi()
+            }
+            supportVersions("1.21", "1.21.1","1.21.2", "1.21.3","1.21.4")
+        }
+        version("1.21-.1") {
+            mappings = MinecraftMappings.mojang
+            dependencies {
+                minecraft("1.21")
+                coreApi()
+            }
+            supportVersions("1.21", "1.21.1",)
+        }
+        version("1.21.2-4") {
+            mappings = MinecraftMappings.mojang
+            dependencies {
+                minecraft("1.21.2")
+                coreApi()
+            }
+            supportVersions("1.21.2", "1.21.3","1.21.4")
         }
     }
 
