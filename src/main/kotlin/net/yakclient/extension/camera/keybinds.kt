@@ -1,10 +1,7 @@
-@file:DefineFeatures
-
 package net.yakclient.extension.camera
 
-import dev.extframework.core.api.feature.DefineFeatures
-import dev.extframework.core.api.feature.Feature
-import dev.extframework.core.api.feature.FeatureImplementationException
+import dev.extframework.core.capability.Capability0
+import dev.extframework.core.capability.defining
+import dev.extframework.core.minecraft.api.TargetCapabilities
 
-@Feature
-fun registerKeyBinds() : Unit = throw FeatureImplementationException()
+val registerKeyBinds by TargetCapabilities.defining<Capability0<Unit>>()

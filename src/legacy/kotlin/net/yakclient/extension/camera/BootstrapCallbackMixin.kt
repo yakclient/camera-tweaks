@@ -1,15 +1,20 @@
 package net.yakclient.extension.camera
 
-import dev.extframework.core.api.mixin.InjectionContinuation
-import dev.extframework.core.api.mixin.Mixin
-import dev.extframework.core.api.mixin.SourceInjection
+import dev.extframework.mixin.api.InjectCode
+import dev.extframework.mixin.api.InjectionBoundary.TAIL
+import dev.extframework.mixin.api.Mixin
+import dev.extframework.mixin.api.Select
 import net.minecraft.client.Minecraft
 
 @Mixin(Minecraft::class)
 abstract class BootstrapCallbackMixin {
-    @SourceInjection(point = "before-end", methodTo = "startGame()V")
-    fun startGame(continuation: InjectionContinuation) : InjectionContinuation.Result {
+    @InjectCode(
+        "startGame",
+        point = Select(
+            TAIL
+        )
+    )
+    fun inject() {
         bootstrapCallbacks.forEach { it() }
-        return continuation.resume()
     }
 }

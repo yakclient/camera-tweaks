@@ -1,11 +1,11 @@
 package net.yakclient.extension.camera
 
-import dev.extframework.core.api.Extension
+import dev.extframework.core.entrypoint.Entrypoint
 
-class CameraExtension : Extension() {
+class CameraExtension : Entrypoint() {
     override fun init() {
         onBootstrap {
-            registerKeyBinds()
+            registerKeyBinds.call()
         }
     }
 }

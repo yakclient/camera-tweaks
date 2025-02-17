@@ -1,18 +1,22 @@
 package net.yakclient.extension.camera
 
 import com.mojang.authlib.GameProfile
-import dev.extframework.core.api.mixin.InjectionContinuation
-import dev.extframework.core.api.mixin.Mixin
-import dev.extframework.core.api.mixin.SourceInjection
+import dev.extframework.mixin.api.Captured
+import dev.extframework.mixin.api.InjectCode
+import dev.extframework.mixin.api.InjectionBoundary
+import dev.extframework.mixin.api.InjectionType
+import dev.extframework.mixin.api.Invoke
+import dev.extframework.mixin.api.Mixin
+import dev.extframework.mixin.api.MixinFlow
+import dev.extframework.mixin.api.Select
+import dev.extframework.mixin.api.Stack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
-import kotlin.math.min
 
 @Mixin(AbstractClientPlayer::class)
 abstract class FovModifierMixin(
@@ -22,32 +26,36 @@ abstract class FovModifierMixin(
     profile: GameProfile
 ) : Player(
     level, pos, f, profile
-)  {
-    @SourceInjection(
-        point = "after-begin",
-        methodTo = "getFieldOfViewModifier(ZF)F"
+) {
+    @InjectCode(
+        "getFieldOfViewModifier",
+        point = Select(
+            invoke = Invoke(
+                AbstractClientPlayer::class,
+                "getAttributeValue(Lnet/minecraft/core/Holder;)D"
+            )
+        ),
+        type = InjectionType.AFTER
     )
-    fun modifyFov(isScoping: Boolean, fovEffectScale: Float, continuation: InjectionContinuation): InjectionContinuation.Result {
-        var fieldOfViewModifier = 1.0F
-        if (this.abilities.flying) {
-            fieldOfViewModifier *= 1.1F
-        }
+    fun walkModifier(
+        stack: Stack,
+    ) {
+        stack.replaceLast(0.1)
+    }
 
-        if (zoomKey.isDown) {
-            fieldOfViewModifier = 0.1f
-        }
+    @InjectCode(
+        "getFieldOfViewModifier",
+        point = Select(
+            InjectionBoundary.TAIL
+        ),
+        locals = [0]
+    )
+    fun getZoomModifier(
+        modifier: Captured<Float>,
+        flow: MixinFlow
+    ) : MixinFlow.Result<*> {
+        val zoom = if (zoomKey.isDown) 0.1f else 1f
 
-        if (this.isUsingItem) {
-            val currentItem = this.useItem
-            if (currentItem.`is`(Items.BOW)) {
-                val chargeProgress = min(this.ticksUsingItem.toFloat() / 20.0F, 1.0F)
-                fieldOfViewModifier *= 1.0F - Mth.square(chargeProgress) * 0.15F
-            } else if (isScoping && this.isScoping) {
-                return continuation.returnEarly(0.1F)
-            }
-        }
-
-        return continuation.returnEarly(Mth.lerp(fovEffectScale, 1.0F, fieldOfViewModifier))
-
+        return flow.yield(modifier.get() * zoom)
     }
 }
