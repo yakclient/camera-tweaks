@@ -5,12 +5,12 @@ import dev.extframework.gradle.publish.ExtensionPublication
 
 plugins {
     kotlin("jvm") version "2.0.21"
-    id("dev.extframework.mc") version "1.2.31"
-    id("dev.extframework.common") version "1.0.49"
+    id("dev.extframework.mc") version "1.2.32"
+    id("dev.extframework.common") version "1.0.50"
 }
 
 group = "net.yakclient.extension"
-version = "1.0.2-BETA"
+version = "1.0.3-BETA"
 
 tasks.wrapper {
     gradleVersion = "8.6-rc-1"
